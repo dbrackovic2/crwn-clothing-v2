@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
-import { signInWithGoogleRedirect } from "../../utils/firebase/firebase.util";
 import {SignInContainer, ButtonsContainer } from './sign-in-form.styles';
 import { googleSignInStart, emailSignInStart, googleRedirectSignInStart } from "../../store/user/user.action";
 
@@ -13,15 +12,6 @@ const defaultFormFields = {
 
 const SignInForm = () => {
     const dispatch = useDispatch()
-    // useEffect(() => {
-    //     async function fetchData () {
-    //         const user = await getRedirectResult(auth);
-    //         if (user) {
-    //             await createUserDocumentFromAuth(user);
-    //         }
-    //     }
-    //     fetchData();
-    // }, []);
 
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { email, password } = formFields;
