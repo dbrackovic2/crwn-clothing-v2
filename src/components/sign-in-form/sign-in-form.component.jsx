@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { getRedirectResult } from "firebase/auth";
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
-import { auth, createUserDocumentFromAuth, signInWithGoogleRedirect } from "../../utils/firebase/firebase.util";
+import { signInWithGoogleRedirect } from "../../utils/firebase/firebase.util";
 import {SignInContainer, ButtonsContainer } from './sign-in-form.styles';
-import { googleSignInStart, emailSignInStart } from "../../store/user/user.action";
+import { googleSignInStart, emailSignInStart, googleRedirectSignInStart } from "../../store/user/user.action";
 
 const defaultFormFields = {
     email: '',
@@ -14,15 +13,15 @@ const defaultFormFields = {
 
 const SignInForm = () => {
     const dispatch = useDispatch()
-    useEffect(() => {
-        async function fetchData () {
-            const user = await getRedirectResult(auth);
-            if (user) {
-                await createUserDocumentFromAuth(user);
-            }
-        }
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     async function fetchData () {
+    //         const user = await getRedirectResult(auth);
+    //         if (user) {
+    //             await createUserDocumentFromAuth(user);
+    //         }
+    //     }
+    //     fetchData();
+    // }, []);
 
     const [formFields, setFormFields] = useState(defaultFormFields);
     const { email, password } = formFields;
@@ -34,6 +33,10 @@ const SignInForm = () => {
 
     const signInWithGoogle = async () => {
         dispatch(googleSignInStart());
+    }
+
+    const signInRedirect = async () => {
+        dispatch(googleRedirectSignInStart());
     }
 
     const handleSubmit = async (event) => {
@@ -74,7 +77,7 @@ const SignInForm = () => {
                 <ButtonsContainer>
                     <Button type="submit">Email/pass</Button>
                     <Button type="button" buttonType={BUTTON_TYPE_CLASSES.google} onClick={signInWithGoogle}>Google Popup</Button>
-                    <Button type='button' buttonType={BUTTON_TYPE_CLASSES.google} onClick={signInWithGoogleRedirect}>Google Redirect</Button>
+                    <Button type='button' buttonType={BUTTON_TYPE_CLASSES.google} onClick={signInRedirect}>Google Redirect</Button>
                 </ButtonsContainer>
             </form>
             

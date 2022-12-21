@@ -1,9 +1,11 @@
 import { takeLatest, put, all, call } from 'redux-saga/effects';
 import { USER_ACTION_TYPES } from './user.types';
+import { getRedirectResult } from 'firebase/auth';
 import { signInSuccess, signInFailed, signUpSuccess, signUpFailed, signOutSuccess, signOutFailed } from './user.action';
 import { getCurrentUser, 
     createUserDocumentFromAuth, 
-    signInWithGooglePopup, 
+    signInWithGooglePopup,
+    signInWithGoogleRedirect,
     signInAuthUserWithEmailAndPassword,
     createAuthUserWithEmailAndPassword,
     signOutUser
@@ -31,6 +33,16 @@ export function* isUserAuthenticated() {
 export function* signInWithGoogle () {
     try {
         const {user} = yield call(signInWithGooglePopup);
+        yield call(getSnapshotFromUserAuth, user);
+    } catch (error) {
+        yield put(signInFailed(error));
+    }
+};
+
+export function* signInViaGoogleRedirect () {
+    try {
+        yield call(signInWithGoogleRedirect);
+        const {user} = yield call(getRedirectResult);
         yield call(getSnapshotFromUserAuth, user);
     } catch (error) {
         yield put(signInFailed(error));
@@ -69,7 +81,11 @@ export function* signInAfterSignUp ({payload: {user, additionalDetails}}) {
 };
 
 export function* onGoogleSignInStart () {
-    yield takeLatest(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START, signInWithGoogle)
+    yield takeLatest(USER_ACTION_TYPES.GOOGLE_SIGN_IN_START, signInWithGoogle);
+};
+
+export function* onGoogleRedirectSignInStart () {
+    yield takeLatest(USER_ACTION_TYPES.GOOGLE_REDIRECT_SIGN_IN_START, signInViaGoogleRedirect);
 };
 
 export function* onCheckUserSession () {
@@ -95,7 +111,8 @@ export function* onSignOutStart () {
 export function* userSagas() {
     yield all([
         call(onCheckUserSession), 
-        call(onGoogleSignInStart), 
+        call(onGoogleSignInStart),
+        call(onGoogleRedirectSignInStart),
         call(onEmailSignInStart), 
         call(onSignUpStart),
         call(onSignUpSuccess),
