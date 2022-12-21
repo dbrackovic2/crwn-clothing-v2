@@ -12,7 +12,7 @@ import { getCurrentUser,
 export function* getSnapshotFromUserAuth(userAuth, additionalDetails) {
     try {
         const userSnapshot = yield call(createUserDocumentFromAuth, userAuth, additionalDetails);
-        yield put(signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() }));
+        yield put(signInSuccess({ id: userSnapshot.id, ...userSnapshot.data }));
     } catch (error) {
         yield put(signInFailed(error));
     }
@@ -31,7 +31,7 @@ export function* isUserAuthenticated() {
 export function* signInWithGoogle () {
     try {
         const {user} = yield call(signInWithGooglePopup);
-        yield call(getSnapshotFromUserAuth(user));
+        yield call(getSnapshotFromUserAuth, user);
     } catch (error) {
         yield put(signInFailed(error));
     }
@@ -40,7 +40,7 @@ export function* signInWithGoogle () {
 export function* signInWithEmail ({payload: {email, password}}) {
     try {
         const {user} =yield call(signInAuthUserWithEmailAndPassword, email, password);
-        yield call(getSnapshotFromUserAuth(user));
+        yield call(getSnapshotFromUserAuth, user);
     } catch (error) {
         yield put(signInFailed(error));
     }
