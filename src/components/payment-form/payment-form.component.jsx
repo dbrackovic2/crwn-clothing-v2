@@ -37,7 +37,7 @@ export const PaymentForm = () => {
                 }
             }
         });
-        console.log(currentUser);
+        
         setIsProcessingPayment(false);
 
         if(paymentResult.error) {
